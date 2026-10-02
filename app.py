@@ -1,13 +1,13 @@
 import streamlit as st
 
-# 페이지 기본 설정
+# 페이지 기본 설정 (사이드바 기본 열림)
 st.set_page_config(page_title="PlantGrowth AI", page_icon="🌿", layout="wide", initial_sidebar_state="expanded")
 
 # 세션 상태(Session State) 초기화
 if "plant_logs" not in st.session_state:
     st.session_state.plant_logs = []
 
-# 원예작물 데이터베이스 (자유 입력 작물 탐색 기준)
+# 원예작물 데이터베이스
 PLANT_DB = {
     "방울토마토": {"min_temp": 18, "max_temp": 27, "tip": "영양생장기에는 과습을 피하고, 개화기/수분기에는 적절한 온도를 유지해야 결실율이 높아집니다."},
     "상추": {"min_temp": 15, "max_temp": 20, "tip": "고온(25°C 이상) 지속 시 꽃대가 올라오는 추대 현상이 발생하여 품질이 떨어집니다."},
@@ -26,7 +26,7 @@ col1, col2 = st.columns(2)
 with col1:
     st.subheader("📥 재배 환경 입력")
     
-    # 1. 작물 직접 입력 (text_input)
+    # 1. 작물 직접 입력
     user_plant = st.text_input("진단할 작물 이름을 입력하세요", value="방울토마토", placeholder="예: 방울토마토, 샤인머스캣, 파프리카 등")
     
     # 2. 재배 온도
@@ -35,10 +35,10 @@ with col1:
     # 3. 토양 수분 상태
     water_status = st.select_slider("토양 수분 상태", options=["건조", "적정", "과습"])
     
-    # 4. 새로 추가된 환경 변수: 생장 단계
+    # 4. 생장 단계
     growth_stage = st.selectbox("현재 작물의 생장 단계", ["발아/유묘기", "영양생장기", "개화/수분기", "결실/수확기"])
     
-    # 5. 새로 추가된 환경 변수: 광 조건
+    # 5. 광 조건
     light_condition = st.radio("광 조건 (조도)", ["음지", "반양지", "양지(강한 직사광선)", "LED 인공광"], horizontal=True)
 
 with col2:
@@ -46,13 +46,11 @@ with col2:
     
     clean_plant_name = user_plant.strip()
     
-    # 데이터베이스 검색 또는 기본 알고리즘 적용
     if clean_plant_name in PLANT_DB:
         info = PLANT_DB[clean_plant_name]
         min_t, max_t = info["min_temp"], info["max_temp"]
         custom_tip = info["tip"]
     else:
-        # DB에 없는 새로운 작물일 경우 생리적 기본 기준값 자동 설정
         min_t, max_t = 18, 28
         custom_tip = f"입력하신 **'{clean_plant_name}'**은(는) 생장 단계[{growth_stage}]에 맞춰 적정 온·습도 유지 및 통풍 관리가 중요한 원예작물입니다."
 
@@ -67,7 +65,7 @@ with col2:
         st.success(f"✅ **적정 온도:** 현재 온도가 최적 생육 범위({min_t}~{max_t}°C) 내에 잘 유지되고 있습니다.")
         temp_result = "적정"
 
-    # 생장 단계 & 광 조건 맞춤 진단 가이드
+    # 맞춤 진단 가이드
     st.info(f"""
     📌 **[{clean_plant_name}] 생육 진단 리포트**
     - **생장 단계 분석:** 현재 **{growth_stage}** 단계입니다. 단계별 맞춤 수분 및 양분 관리법을 적용하세요.
