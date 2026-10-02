@@ -1,7 +1,7 @@
 import streamlit as st
 
 # 페이지 기본 설정
-st.set_page_config(page_title="PlantGrowth AI", page_icon="🌿", layout="wide")
+st.set_page_config(page_title="PlantGrowth AI", page_icon="🌿", layout="wide", initial_sidebar_state="expanded")
 
 # 세션 상태(Session State) 초기화
 if "plant_logs" not in st.session_state:
