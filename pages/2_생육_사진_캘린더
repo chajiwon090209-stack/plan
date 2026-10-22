@@ -2,7 +2,6 @@ import streamlit as st
 from datetime import date
 
 # 페이지 기본 설정
-st.set_page_config(page_title="생육 사진 캘린더", page_icon="📸", layout="wide")
 
 st.title("📸 날짜별 생육 사진 캘린더 & 기록")
 st.caption("날짜별로 작물 사진을 업로드하고 생장 변화를 캘린더 형태로 기록·확인하세요.")
