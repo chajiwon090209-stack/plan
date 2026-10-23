@@ -3,10 +3,10 @@ import streamlit as st
 # ---------------------------------------------------------
 # 1. 사이드바 메뉴 및 이모티콘 직접 지정 (st.navigation)
 # ---------------------------------------------------------
+# app.py 7~8번 줄 변경
 main_page = st.Page("app.py", title="생장 환경 진단", icon="🌱", default=True)
 log_page = st.Page("pages/1_log.py", title="생장 관리 일지", icon="📋")
-calendar_page = st.Page("pages/2_calendar.py", title="생육 사진 캘린더", icon="📸")
-
+calendar_page = st.Page("pages/2_photo_calendar.py", title="생육 사진 캘린더", icon="📸")  # <- 여기 파일명 수정!
 pg = st.navigation({
     "메뉴": [main_page, log_page, calendar_page]
 })
