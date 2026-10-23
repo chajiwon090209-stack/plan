@@ -1,13 +1,12 @@
 import streamlit as st
 import pandas as pd
 
-# 페이지 기본 설정
+# 사이드바 메뉴 제목 및 이모티콘 지정
 st.set_page_config(page_title="생장 관리 일지", page_icon="📋", layout="wide")
 
 st.title("📋 저장된 생장 관리 일지")
 st.caption("누적된 작물 생육 환경 기록 및 진단 내역입니다.")
 
-# 세션 상태 초기화
 if "plant_logs" not in st.session_state:
     st.session_state.plant_logs = []
 
