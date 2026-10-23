@@ -1,7 +1,12 @@
 import streamlit as st
 
-# 사이드바 메인 페이지 기본 설정
-st.set_page_config(page_title="생장 환경 진단", page_icon="🌿", layout="wide", initial_sidebar_state="expanded")
+# 사이드바 메인 페이지 설정
+st.set_page_config(
+    page_title="생장 환경 진단",
+    page_icon="🌱",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
 # 작물 이름 분석 후 이모티콘 자동 반환 함수
 def get_crop_emoji(name):
