@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 
-# 사이드바 메뉴 제목 및 이모티콘 지정
 st.set_page_config(page_title="생장 관리 일지", page_icon="📋", layout="wide")
 
 st.title("📋 저장된 생장 관리 일지")
