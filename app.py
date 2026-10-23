@@ -1,11 +1,40 @@
 import streamlit as st
 
-# 사이드바 메인 페이지 설정
-st.set_page_config(page_title="생장 환경 진단", page_icon="🌿", layout="wide", initial_sidebar_state="expanded")
+# ---------------------------------------------------------
+# 1. 사이드바 메뉴 및 이모티콘 직접 지정 (st.navigation)
+# ---------------------------------------------------------
+main_page = st.Page("app.py", title="생장 환경 진단", icon="🌱", default=True)
+log_page = st.Page("pages/1_log.py", title="생장 관리 일지", icon="📋")
+calendar_page = st.Page("pages/2_calendar.py", title="생육 사진 캘린더", icon="📸")
+
+pg = st.navigation({
+    "메뉴": [main_page, log_page, calendar_page]
+})
+
+# 페이지 기본 설정
+st.set_page_config(page_title="PlantGrowth AI", page_icon="🌿", layout="wide", initial_sidebar_state="expanded")
 
 # 세션 상태(Session State) 초기화
 if "plant_logs" not in st.session_state:
     st.session_state.plant_logs = []
+
+# 작물 이름 분석 후 이모티콘 자동 반환 함수
+def get_crop_emoji(name):
+    name_clean = name.strip()
+    emoji_dict = {
+        "토마토": "🍅", "방울토마토": "🍅",
+        "상추": "🥬", "배추": "🥬", "시금치": "🥬",
+        "딸기": "🍓",
+        "포도": "🍇", "샤인머스캣": "🍇", "샤인머스켓": "🍇",
+        "파프리카": "🫑", "피망": "🫑", "고추": "🌶️",
+        "당근": "🥕", "옥수수": "🌽", "오이": "🥒", "가지": "🍆",
+        "사과": "🍎", "복숭아": "🍑", "바나나": "🍌", "레몬": "🍋",
+        "바질": "🌿", "허브": "🌿"
+    }
+    for crop_key, emoji in emoji_dict.items():
+        if crop_key in name_clean:
+            return emoji
+    return "🌱"
 
 # 원예작물 데이터베이스
 PLANT_DB = {
@@ -17,7 +46,9 @@ PLANT_DB = {
     "샤인머스캣": {"min_temp": 20, "max_temp": 30, "tip": "수확기 광량이 부족하면 당도 축적이 지연되므로 적절한 채광 관리가 중요합니다."}
 }
 
-# 메인 화면 구성
+# ---------------------------------------------------------
+# 2. 메인 화면 구성
+# ---------------------------------------------------------
 st.title("🌱 원예작물 맞춤형 생장 환경 진단 시스템")
 st.caption("원하는 작물과 현재 재배 환경 조건을 입력하면 생리 반응에 맞춘 정밀 가이드를 제시합니다.")
 
@@ -26,25 +57,17 @@ col1, col2 = st.columns(2)
 with col1:
     st.subheader("📥 재배 환경 입력")
     
-    # 1. 작물 직접 입력
     user_plant = st.text_input("진단할 작물 이름을 입력하세요", value="방울토마토", placeholder="예: 방울토마토, 샤인머스캣, 파프리카 등")
-    
-    # 2. 재배 온도
     current_temp = st.slider("현재 재배 온도 (°C)", 0, 40, 22)
-    
-    # 3. 토양 수분 상태
     water_status = st.select_slider("토양 수분 상태", options=["건조", "적정", "과습"])
-    
-    # 4. 생장 단계
     growth_stage = st.selectbox("현재 작물의 생장 단계", ["발아/유묘기", "영양생장기", "개화/수분기", "결실/수확기"])
-    
-    # 5. 광 조건
     light_condition = st.radio("광 조건 (조도)", ["음지", "반양지", "양지(강한 직사광선)", "LED 인공광"], horizontal=True)
 
 with col2:
     st.subheader("💡 생육 진단 결과 및 정밀 가이드")
     
     clean_plant_name = user_plant.strip()
+    crop_emoji = get_crop_emoji(clean_plant_name)
     
     if clean_plant_name in PLANT_DB:
         info = PLANT_DB[clean_plant_name]
@@ -65,9 +88,9 @@ with col2:
         st.success(f"✅ **적정 온도:** 현재 온도가 최적 생육 범위({min_t}~{max_t}°C) 내에 잘 유지되고 있습니다.")
         temp_result = "적정"
 
-    # 맞춤 진단 가이드
+    # 맞춤 진단 가이드 (작물 이모티콘 포함)
     st.info(f"""
-    📌 **[{clean_plant_name}] 생육 진단 리포트**
+    📌 **[{crop_emoji} {clean_plant_name}] 생육 진단 리포트**
     - **생장 단계 분석:** 현재 **{growth_stage}** 단계입니다. 단계별 맞춤 수분 및 양분 관리법을 적용하세요.
     - **광환경 진단:** 선택된 **[{light_condition}]** 환경에 맞춰 광합성 효율을 극대화하세요.
     - **원예생명 진단 팁:** {custom_tip}
@@ -76,11 +99,16 @@ with col2:
     # 일지 저장 버튼
     if st.button("💾 이 진단 기록을 생장 일지에 추가"):
         st.session_state.plant_logs.append({
-            "작물명": clean_plant_name,
+            "작물명": f"{crop_emoji} {clean_plant_name}",
             "현재온도": f"{current_temp}°C",
             "토양수분": water_status,
             "생장단계": growth_stage,
             "광조건": light_condition,
             "진단결과": temp_result
         })
-        st.success("✅ 생장 일지에 성공적으로 기록되었습니다! 왼쪽 사이드바의 '생장 관리 일지' 페이지에서 확인하세요.")
+        st.success(f"✅ {crop_emoji} {clean_plant_name} 기록이 생장 일지에 성공적으로 추가되었습니다!")
+
+# ---------------------------------------------------------
+# 3. 내비게이션 실행
+# ---------------------------------------------------------
+pg.run()
