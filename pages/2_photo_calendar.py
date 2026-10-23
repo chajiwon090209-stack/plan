@@ -1,13 +1,10 @@
 import streamlit as st
 from datetime import date
 
-# 사이드바 메뉴 제목 및 이모티콘 지정
-st.set_page_config(page_title="생육 사진 캘린더", page_icon="📸", layout="wide")
-
 st.title("📸 날짜별 생육 사진 캘린더 & 기록")
 st.caption("날짜별로 작물 사진을 업로드하고 생장 변화를 타임라인 형태로 기록·확인하세요.")
 
-# 작물별 대표 이모티콘 매핑
+# 작물 이름 분석 후 대표 이모티콘 자동 반환
 def get_crop_emoji(name):
     name_clean = name.strip()
     emoji_dict = {
@@ -25,6 +22,7 @@ def get_crop_emoji(name):
             return emoji
     return "🌱"
 
+# 세션 상태 초기화
 if "photo_logs" not in st.session_state:
     st.session_state.photo_logs = []
 
@@ -48,7 +46,7 @@ with col1:
                 "이미지": uploaded_file,
                 "메모": memo
             })
-            st.success(f"✅ {emoji} {plant_name} 일지가 저장되었습니다!")
+            st.success(f"✅ {emoji} {plant_name} 일지가 성공적으로 등록되었습니다!")
         else:
             st.warning("⚠️ 기록할 작물 사진을 업로드해 주세요!")
 
