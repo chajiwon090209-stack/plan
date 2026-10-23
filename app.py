@@ -1,7 +1,22 @@
 import streamlit as st
 
-# 사이드바 메인 페이지 기본 설정
-st.set_page_config(page_title="생장 환경 진단", page_icon="🌿", layout="wide", initial_sidebar_state="expanded")
+# ---------------------------------------------------------
+# 1. 사이드바 메뉴 및 이모티콘 직접 지정 (st.navigation)
+# ---------------------------------------------------------
+main_page = st.Page("app.py", title="생장 환경 진단", icon="🌱", default=True)
+log_page = st.Page("pages/1_log.py", title="생장 관리 일지", icon="📋")
+calendar_page = st.Page("pages/2_calendar.py", title="생육 사진 캘린더", icon="📸")
+
+pg = st.navigation({
+    "메뉴": [main_page, log_page, calendar_page]
+})
+
+# 페이지 기본 설정
+st.set_page_config(page_title="PlantGrowth AI", page_icon="🌿", layout="wide", initial_sidebar_state="expanded")
+
+# 세션 상태(Session State) 초기화
+if "plant_logs" not in st.session_state:
+    st.session_state.plant_logs = []
 
 # 작물 이름 분석 후 이모티콘 자동 반환 함수
 def get_crop_emoji(name):
@@ -21,10 +36,6 @@ def get_crop_emoji(name):
             return emoji
     return "🌱"
 
-# 세션 상태(Session State) 초기화
-if "plant_logs" not in st.session_state:
-    st.session_state.plant_logs = []
-
 # 원예작물 데이터베이스
 PLANT_DB = {
     "방울토마토": {"min_temp": 18, "max_temp": 27, "tip": "영양생장기에는 과습을 피하고, 개화기/수분기에는 적절한 온도를 유지해야 결실율이 높아집니다."},
@@ -35,7 +46,9 @@ PLANT_DB = {
     "샤인머스캣": {"min_temp": 20, "max_temp": 30, "tip": "수확기 광량이 부족하면 당도 축적이 지연되므로 적절한 채광 관리가 중요합니다."}
 }
 
-# 메인 화면 구성
+# ---------------------------------------------------------
+# 2. 메인 화면 구성
+# ---------------------------------------------------------
 st.title("🌱 원예작물 맞춤형 생장 환경 진단 시스템")
 st.caption("원하는 작물과 현재 재배 환경 조건을 입력하면 생리 반응에 맞춘 정밀 가이드를 제시합니다.")
 
@@ -94,3 +107,8 @@ with col2:
             "진단결과": temp_result
         })
         st.success(f"✅ {crop_emoji} {clean_plant_name} 기록이 생장 일지에 성공적으로 추가되었습니다!")
+
+# ---------------------------------------------------------
+# 3. 내비게이션 실행
+# ---------------------------------------------------------
+pg.run()
