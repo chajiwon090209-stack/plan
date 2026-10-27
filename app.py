@@ -1,15 +1,5 @@
 import streamlit as st
 
-# 1. 사이드바 메뉴 및 이모티콘 직접 정의 (app.py 파일명 유지)
-main_page = st.Page("app.py", title="생장 환경 진단", icon="🌱", default=True)
-log_page = st.Page("pages/1_📋_생장_관리_일지.py", title="생장 관리 일지", icon="📋")
-calendar_page = st.Page("pages/2_📸_생육_사진_캘린더.py", title="생육 사진 캘린더", icon="📸")
-
-# 2. 내비게이션 바 생성
-pg = st.navigation({
-    "메뉴": [main_page, log_page, calendar_page]
-})
-
 # 사이드바 메인 페이지 기본 설정
 st.set_page_config(
     page_title="생장 환경 진단",
@@ -109,6 +99,3 @@ with col2:
             "진단결과": temp_result
         })
         st.success(f"✅ {crop_emoji} {clean_plant_name} 기록이 생장 일지에 성공적으로 추가되었습니다!")
-
-# 3. 내비게이션 실행
-pg.run()
