@@ -24,7 +24,7 @@ if st.session_state.logged_in:
 else:
     with st.form("login_form"):
         st.subheader("📝 로그인 정보 입력")
-        input_id = st.text_input("아이디 (학번 또는 이름)", placeholder="예: 2학년 3반 차귀금")
+        input_id = st.text_input("아이디 (학번 또는 이름)", placeholder="예: 0학년 0반 홍길돌")
         input_pw = st.text_input("비밀번호", type="password", placeholder="비밀번호를 입력하세요")
         
         submitted = st.form_submit_button("로그인")
