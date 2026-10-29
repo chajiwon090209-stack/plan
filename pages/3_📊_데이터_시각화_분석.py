@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import altair as alt
 
 st.set_page_config(page_title="데이터 시각화 분석", page_icon="📊", layout="wide")
 
@@ -38,15 +39,31 @@ col3.metric("주요 생장 단계", df['생장단계'].mode()[0] if not df.empty
 
 st.markdown("---")
 
-# 1. 토양 수분 상태별 분포 차트
+# 1. 토양 수분 상태별 분포 차트 (글씨 가로 정렬)
 st.subheader("💧 토양 수분 상태 분포")
-water_counts = df['토양수분'].value_counts()
-st.bar_chart(water_counts)
+water_counts = df['토양수분'].value_counts().reset_index()
+water_counts.columns = ['토양수분', '건수']
 
-# 2. 광 조건별 분포 차트
+water_chart = alt.Chart(water_counts).mark_bar(color='#60a5fa').encode(
+    x=alt.X('토양수분:N', sort=None, axis=alt.Axis(labelAngle=0)), # labelAngle=0으로 글씨를 가로로 고정
+    y=alt.Y('건수:Q', title='진단 건수'),
+    tooltip=['토양수분', '건수']
+).properties(height=300)
+
+st.altair_chart(water_chart, use_container_width=True)
+
+# 2. 광 조건별 분포 차트 (글씨 가로 정렬)
 st.subheader("☀️ 광환경(조도) 조건 분포")
-light_counts = df['광조건'].value_counts()
-st.bar_chart(light_counts)
+light_counts = df['광조건'].value_counts().reset_index()
+light_counts.columns = ['광조건', '건수']
+
+light_chart = alt.Chart(light_counts).mark_bar(color='#34d399').encode(
+    x=alt.X('광조건:N', sort=None, axis=alt.Axis(labelAngle=0)), # labelAngle=0으로 글씨를 가로로 고정
+    y=alt.Y('건수:Q', title='진단 건수'),
+    tooltip=['광조건', '건수']
+).properties(height=300)
+
+st.altair_chart(light_chart, use_container_width=True)
 
 # 3. 데이터 테이블 확인
 if is_sample:
