@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 from datetime import datetime
 
 st.set_page_config(page_title="사용자 인증 및 로그인", page_icon="🔑", layout="wide")
@@ -20,16 +21,25 @@ if st.session_state.logged_in:
     
     # 💡 로그인 접속 기록(로그) 섹션 추가
     st.markdown("---")
-    st.subheader("📋 최근 로그인 접속 기록")
-    st.caption("본 계정으로 시스템에 접근한 인증 타임라인 기록입니다.")
+    
+    col_h1, col_h2 = st.columns([3, 1])
+    with col_h1:
+        st.subheader("📋 최근 로그인 접속 기록")
+        st.caption("본 계정으로 시스템에 접근한 인증 타임라인 기록입니다.")
+    with col_h2:
+        # 🗑️ 로그인 기록 삭제(초기화) 버튼 추가
+        if st.button("🗑️ 기록 초기화", use_container_width=True):
+            st.session_state.login_history = []
+            st.success("로그인 기록이 삭제되었습니다!")
+            st.rerun()
     
     if st.session_state.login_history:
-        import pandas as pd
         history_df = pd.DataFrame(st.session_state.login_history)
         st.dataframe(history_df, use_container_width=True)
     else:
         st.info("기록된 로그인 이력이 없습니다.")
 
+    st.markdown("---")
     if st.button("로그아웃"):
         st.session_state.logged_in = False
         st.session_state.username = ""
