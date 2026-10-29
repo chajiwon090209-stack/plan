@@ -1,101 +1,79 @@
 import streamlit as st
+import pandas as pd
 
-# 사이드바 메인 페이지 설정
-st.set_page_config(
-    page_title="생장 환경 진단",
-    page_icon="🌱",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
+st.set_page_config(page_title="원예작물 맞춤형 생장 환경 진단 시스템", page_icon="🌱", layout="wide")
 
-# 작물 이름 분석 후 이모티콘 자동 반환 함수
-def get_crop_emoji(name):
-    name_clean = name.strip()
-    emoji_dict = {
-        "토마토": "🍅", "방울토마토": "🍅",
-        "상추": "🥬", "배추": "🥬", "시금치": "🥬",
-        "딸기": "🍓",
-        "포도": "🍇", "샤인머스캣": "🍇", "샤인머스켓": "🍇",
-        "파프리카": "🫑", "피망": "🫑", "고추": "🌶️",
-        "당근": "🥕", "옥수수": "🌽", "오이": "🥒", "가지": "🍆",
-        "사과": "🍎", "복숭아": "🍑", "바나나": "🍌", "레몬": "🍋",
-        "바질": "🌿", "허브": "🌿"
-    }
-    for crop_key, emoji in emoji_dict.items():
-        if crop_key in name_clean:
-            return emoji
-    return "🌱"
-
-# 세션 상태(Session State) 초기화
+# 세션 상태 초기화
 if "plant_logs" not in st.session_state:
     st.session_state.plant_logs = []
 
-# 원예작물 데이터베이스
-PLANT_DB = {
-    "방울토마토": {"min_temp": 18, "max_temp": 27, "tip": "영양생장기에는 과습을 피하고, 개화기/수분기에는 적절한 온도를 유지해야 결실율이 높아집니다."},
-    "상추": {"min_temp": 15, "max_temp": 20, "tip": "고온(25°C 이상) 지속 시 꽃대가 올라오는 추대 현상이 발생하여 품질이 떨어집니다."},
-    "바질": {"min_temp": 20, "max_temp": 30, "tip": "추위에 매우 약하므로 15°C 이하로 떨어지지 않도록 보온 관리가 필요합니다."},
-    "딸기": {"min_temp": 17, "max_temp": 23, "tip": "수확기 고온은 과실을 무르게 하므로 통풍과 온도 관리가 필수적입니다."},
-    "파프리카": {"min_temp": 20, "max_temp": 28, "tip": "주야간 온도차가 너무 크면 착과율이 떨어지므로 정밀한 온도 관리가 필요합니다."},
-    "샤인머스캣": {"min_temp": 20, "max_temp": 30, "tip": "수확기 광량이 부족하면 당도 축적이 지연되므로 적절한 채광 관리가 중요합니다."}
-}
-
-# 메인 화면 구성
 st.title("🌱 원예작물 맞춤형 생장 환경 진단 시스템")
 st.caption("원하는 작물과 현재 재배 환경 조건을 입력하면 생리 반응에 맞춘 정밀 가이드를 제시합니다.")
 
-col1, col2 = st.columns(2)
+# 화면을 좌우 2열로 분할
+col_left, col_right = st.columns([1, 1], gap="large")
 
-with col1:
-    st.subheader("📥 재배 환경 입력")
+with col_left:
+    st.markdown("### 📥 재배 환경 입력")
     
-    user_plant = st.text_input("진단할 작물 이름을 입력하세요", value="방울토마토", placeholder="예: 방울토마토, 샤인머스캣, 파프리카 등")
+    # 1. 작물 이름 입력
+    crop_name = st.text_input("진단할 작물 이름을 입력하세요", value="방울토마토", placeholder="예: 방울토마토, 상추 등")
+    
+    # 2. 온도 슬라이더
     current_temp = st.slider("현재 재배 온도 (°C)", 0, 40, 22)
-    water_status = st.select_slider("토양 수분 상태", options=["건조", "적정", "과습"])
+    
+    # 3. 토양 수분 상태 선택
+    soil_moisture = st.selectbox("토양 수분 상태", ["건조", "적정", "과습"])
+    
+    # 4. 생장 단계 선택
     growth_stage = st.selectbox("현재 작물의 생장 단계", ["발아/유묘기", "영양생장기", "개화/수분기", "결실/수확기"])
-    light_condition = st.radio("광 조건 (조도)", ["음지", "반양지", "양지(강한 직사광선)", "LED 인공광"], horizontal=True)
+    
+    # 5. 광 조건 (조도) 선택 -> st.pills를 활용해 깔끔한 버튼 형태로 개선!
+    st.markdown("광 조건 (조도)")
+    light_condition = st.pills(
+        "광 조건 선택",
+        ["음지", "반양지", "양지(강한 직사광선)", "LED 인공광"],
+        default="양지(강한 직사광선)",
+        label_visibility="collapsed"
+    )
 
-with col2:
-    st.subheader("💡 생육 진단 결과 및 정밀 가이드")
+with col_right:
+    st.markdown("### 💡 생육 진단 결과 및 정밀 가이드")
     
-    clean_plant_name = user_plant.strip()
-    crop_emoji = get_crop_emoji(clean_plant_name)
-    
-    if clean_plant_name in PLANT_DB:
-        info = PLANT_DB[clean_plant_name]
-        min_t, max_t = info["min_temp"], info["max_temp"]
-        custom_tip = info["tip"]
+    # 온도 적정성 평가 로직
+    if 18 <= current_temp <= 27:
+        temp_status = "적정"
+        temp_msg = f"적정 온도: 현재 온도({current_temp}°C)가 최적 생육 범위(18~27°C) 내에 잘 유지되고 있습니다."
+        st.success(f"✅ {temp_msg}")
+    elif current_temp < 18:
+        temp_status = "저온 경고"
+        temp_msg = f"저온 경고: 현재 온도({current_temp}°C)가 다소 낮습니다. 보온 조치를 고려하세요."
+        st.warning(f"⚠️ {temp_msg}")
     else:
-        min_t, max_t = 18, 28
-        custom_tip = f"입력하신 **'{clean_plant_name}'**은(는) 생장 단계[{growth_stage}]에 맞춰 적정 온·습도 유지 및 통풍 관리가 중요한 원예작물입니다."
-
-    # 온도 진단 결과
-    if current_temp < min_t:
-        st.warning(f"⚠️ **저온 주의:** 현재 온도({current_temp}°C)가 생육 적정 하한선({min_t}°C)보다 낮습니다. 생육 지연 및 냉해 위험이 있으니 보온 조치가 필요합니다.")
-        temp_result = "저온 경고"
-    elif current_temp > max_t:
-        st.error(f"🚨 **고온 스트레스 경고:** 현재 온도({current_temp}°C)가 적정 상한선({max_t}°C)을 초과했습니다. 호흡량 증가로 인한 영양 소모가 심해지니 차광 및 환기가 필요합니다.")
-        temp_result = "고온 경고"
-    else:
-        st.success(f"✅ **적정 온도:** 현재 온도가 최적 생육 범위({min_t}~{max_t}°C) 내에 잘 유지되고 있습니다.")
-        temp_result = "적정"
-
-    # 맞춤 진단 가이드 (작물 이모티콘 포함)
-    st.info(f"""
-    📌 **[{crop_emoji} {clean_plant_name}] 생육 진단 리포트**
-    - **생장 단계 분석:** 현재 **{growth_stage}** 단계입니다. 단계별 맞춤 수분 및 양분 관리법을 적용하세요.
-    - **광환경 진단:** 선택된 **[{light_condition}]** 환경에 맞춰 광합성 효율을 극대화하세요.
-    - **원예생명 진단 팁:** {custom_tip}
-    """)
+        temp_status = "고온 경고"
+        temp_msg = f"고온 경고: 현재 온도({current_temp}°C)가 높습니다. 환기 및 차광이 필요합니다."
+        st.error(f"🚨 {temp_msg}")
+        
+    # 맞춤형 리포트 박스
+    with st.container(border=True):
+        st.markdown(f"#### 🧬 [{crop_name}] 생육 진단 리포트")
+        st.markdown(f"""
+        - **생장 단계 분석:** 현재 `{growth_stage}` 단계입니다. 단계별 맞춤 수분(`{soil_moisture}`) 및 양분 관리법을 적용하세요.
+        - **광환경 진단:** 선택된 `{light_condition}` 환경에 맞춰 광합성 효율을 극대화하세요.
+        - **원예생명 진단 팁:** 영양생장기에는 과습을 피하고, 개화기/수분기에는 적절한 온도를 유지해야 결실율이 높아집니다.
+        """)
     
-    # 일지 저장 버튼
-    if st.button("💾 이 진단 기록을 생장 일지에 추가"):
-        st.session_state.plant_logs.append({
-            "작물명": f"{crop_emoji} {clean_plant_name}",
+    st.markdown("")
+    
+    # 일지 추가 버튼 (눈에 띄게 배치)
+    if st.button("📋 이 진단 기록을 생장 일지에 추가", type="primary", use_container_width=True):
+        new_log = {
+            "작물명": crop_name,
             "현재온도": f"{current_temp}°C",
-            "토양수분": water_status,
+            "토양수분": soil_moisture,
             "생장단계": growth_stage,
             "광조건": light_condition,
-            "진단결과": temp_result
-        })
-        st.success(f"✅ {crop_emoji} {clean_plant_name} 기록이 생장 일지에 성공적으로 추가되었습니다!")
+            "진단결과": temp_status
+        }
+        st.session_state.plant_logs.insert(0, new_log)
+        st.success("🎉 진단 기록이 생장 관리 일지에 성공적으로 추가되었습니다!")
