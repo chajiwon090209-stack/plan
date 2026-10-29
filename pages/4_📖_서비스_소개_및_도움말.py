@@ -60,16 +60,23 @@ with tab1:
 
 with tab2:
     st.subheader("🎨 애플리케이션 테마 및 화면 모드 설정")
-    st.write("프로그램의 전체적인 시각적 분위기를 사용자의 취향이나 환경에 맞게 변경할 수 있습니다.")
+    st.write("프로그램의 전체적인 시각적 분위기를 기본 제공 모드나 사용자가 직접 고른 커스텀 색상으로 변경할 수 있습니다.")
     
+    # 테마 모드 선택 (기존 3가지 + 사용자 지정 모드 추가)
     theme_mode = st.radio(
         "화면 테마 모드 선택",
-        ["🌙 다크 모드 (Dark Mode - 기본)", "☀️ 라이트 모드 (Light Mode - 밝은 화면)", "🌿 에코 그린 모드 (Eco Green - 원예 특화 테마)"],
+        [
+            "🌙 다크 모드 (Dark Mode - 기본)", 
+            "☀️ 라이트 모드 (Light Mode - 밝은 화면)", 
+            "🌿 에코 그린 모드 (Eco Green - 원예 특화 테마)",
+            "🎨 사용자 지정 컬러 (Custom Color Picker)"
+        ],
         index=0
     )
     
     st.markdown("---")
     
+    # 1. 기본 제공 모드들 처리
     if "다크" in theme_mode:
         st.markdown("""
             <style>
@@ -80,6 +87,7 @@ with tab2:
             </style>
         """, unsafe_allow_html=True)
         st.info("🌙 **다크 모드**가 적용되었습니다. 눈의 피로를 줄여주는 세련된 개발 환경 테마입니다.")
+        
     elif "라이트" in theme_mode:
         st.markdown("""
             <style>
@@ -90,7 +98,8 @@ with tab2:
             </style>
         """, unsafe_allow_html=True)
         st.success("☀️ **라이트 모드**가 적용되었습니다. 밝고 선명한 화면 가독성을 제공합니다.")
-    else:
+        
+    elif "에코 그린" in theme_mode:
         st.markdown("""
             <style>
             .stApp {
@@ -100,6 +109,110 @@ with tab2:
             </style>
         """, unsafe_allow_html=True)
         st.warning("🌿 **에코 그린 모드**가 적용되었습니다. 원예 작물과 생명과학의 싱그러운 초록빛 테마가 반영되었습니다!")
+        
+    # 2. 🎨 사용자가 직접 색상을 고르는 커스텀 모드 처리
+    else:
+        st.markdown("### 🎨 나만의 커스텀 테마 색상 설정")
+        col_c1, col_c2 = st.columns(2)
+        with col_c1:
+            custom_bg = st.color_picker("원하는 배경 색상 선택", "#1e293b")
+        with col_c2:
+            custom_text = st.color_picker("원하는 글자 색상 선택", "#f8fafc")
+            
+        # 선택한 커스텀 색상을 CSS로 실시간 반영
+        st.markdown(f"""
+            <style>
+            .stApp {{
+                background-color: {custom_bg} !important;
+                color: {custom_text} !important;
+            }}
+            </style>
+        """, unsafe_allow_html=True)
+        
+        st.markdown(f"""
+            <div style="background-color: {custom_bg}; color: {custom_text}; padding: 15px; border-radius: 8px; border: 1px solid #cbd5e1;">
+                ✨ <b>사용자 지정 커스텀 테마</b>가 적용되었습니다!<br>
+                - 배경색: <code>{custom_bg}</code><br>
+                - 글자색: <code>{custom_text}</code>
+            </div>
+        """, unsafe_allow_html=True)with tab2:
+    st.subheader("🎨 애플리케이션 테마 및 화면 모드 설정")
+    st.write("프로그램의 전체적인 시각적 분위기를 기본 제공 모드나 사용자가 직접 고른 커스텀 색상으로 변경할 수 있습니다.")
+    
+    # 테마 모드 선택 (기존 3가지 + 사용자 지정 모드 추가)
+    theme_mode = st.radio(
+        "화면 테마 모드 선택",
+        [
+            "🌙 다크 모드 (Dark Mode - 기본)", 
+            "☀️ 라이트 모드 (Light Mode - 밝은 화면)", 
+            "🌿 에코 그린 모드 (Eco Green - 원예 특화 테마)",
+            "🎨 사용자 지정 컬러 (Custom Color Picker)"
+        ],
+        index=0
+    )
+    
+    st.markdown("---")
+    
+    # 1. 기본 제공 모드들 처리
+    if "다크" in theme_mode:
+        st.markdown("""
+            <style>
+            .stApp {
+                background-color: #0e1117;
+                color: #fafafa;
+            }
+            </style>
+        """, unsafe_allow_html=True)
+        st.info("🌙 **다크 모드**가 적용되었습니다. 눈의 피로를 줄여주는 세련된 개발 환경 테마입니다.")
+        
+    elif "라이트" in theme_mode:
+        st.markdown("""
+            <style>
+            .stApp {
+                background-color: #ffffff;
+                color: #31333F;
+            }
+            </style>
+        """, unsafe_allow_html=True)
+        st.success("☀️ **라이트 모드**가 적용되었습니다. 밝고 선명한 화면 가독성을 제공합니다.")
+        
+    elif "에코 그린" in theme_mode:
+        st.markdown("""
+            <style>
+            .stApp {
+                background-color: #f0fdf4;
+                color: #14532d;
+            }
+            </style>
+        """, unsafe_allow_html=True)
+        st.warning("🌿 **에코 그린 모드**가 적용되었습니다. 원예 작물과 생명과학의 싱그러운 초록빛 테마가 반영되었습니다!")
+        
+    # 2. 🎨 사용자가 직접 색상을 고르는 커스텀 모드 처리
+    else:
+        st.markdown("### 🎨 나만의 커스텀 테마 색상 설정")
+        col_c1, col_c2 = st.columns(2)
+        with col_c1:
+            custom_bg = st.color_picker("원하는 배경 색상 선택", "#1e293b")
+        with col_c2:
+            custom_text = st.color_picker("원하는 글자 색상 선택", "#f8fafc")
+            
+        # 선택한 커스텀 색상을 CSS로 실시간 반영
+        st.markdown(f"""
+            <style>
+            .stApp {{
+                background-color: {custom_bg} !important;
+                color: {custom_text} !important;
+            }}
+            </style>
+        """, unsafe_allow_html=True)
+        
+        st.markdown(f"""
+            <div style="background-color: {custom_bg}; color: {custom_text}; padding: 15px; border-radius: 8px; border: 1px solid #cbd5e1;">
+                ✨ <b>사용자 지정 커스텀 테마</b>가 적용되었습니다!<br>
+                - 배경색: <code>{custom_bg}</code><br>
+                - 글자색: <code>{custom_text}</code>
+            </div>
+        """, unsafe_allow_html=True)
 
 with tab3:
     st.subheader("🌾 주요 원예작물 생육 환경 데이터베이스")
