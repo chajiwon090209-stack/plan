@@ -62,7 +62,7 @@ with tab2:
     st.subheader("🎨 애플리케이션 테마 및 화면 모드 설정")
     st.write("프로그램의 전체적인 시각적 분위기를 기본 제공 모드나 사용자가 직접 고른 커스텀 색상으로 변경할 수 있습니다.")
     
-    # 테마 모드 선택 (기존 3가지 + 사용자 지정 모드 추가)
+    # 테마 모드 선택 (기본 3가지 + 사용자 지정 컬러 피커 모드)
     theme_mode = st.radio(
         "화면 테마 모드 선택",
         [
@@ -76,7 +76,7 @@ with tab2:
     
     st.markdown("---")
     
-    # 1. 기본 제공 모드들 처리
+    # 1. 기존 기본 제공 모드 처리
     if "다크" in theme_mode:
         st.markdown("""
             <style>
@@ -119,84 +119,6 @@ with tab2:
         with col_c2:
             custom_text = st.color_picker("원하는 글자 색상 선택", "#f8fafc")
             
-        # 선택한 커스텀 색상을 CSS로 실시간 반영
-        st.markdown(f"""
-            <style>
-            .stApp {{
-                background-color: {custom_bg} !important;
-                color: {custom_text} !important;
-            }}
-            </style>
-        """, unsafe_allow_html=True)
-        
-        st.markdown(f"""
-            <div style="background-color: {custom_bg}; color: {custom_text}; padding: 15px; border-radius: 8px; border: 1px solid #cbd5e1;">
-                ✨ <b>사용자 지정 커스텀 테마</b>가 적용되었습니다!<br>
-                - 배경색: <code>{custom_bg}</code><br>
-                - 글자색: <code>{custom_text}</code>
-            </div>
-        """, unsafe_allow_html=True)with tab2:
-    st.subheader("🎨 애플리케이션 테마 및 화면 모드 설정")
-    st.write("프로그램의 전체적인 시각적 분위기를 기본 제공 모드나 사용자가 직접 고른 커스텀 색상으로 변경할 수 있습니다.")
-    
-    # 테마 모드 선택 (기존 3가지 + 사용자 지정 모드 추가)
-    theme_mode = st.radio(
-        "화면 테마 모드 선택",
-        [
-            "🌙 다크 모드 (Dark Mode - 기본)", 
-            "☀️ 라이트 모드 (Light Mode - 밝은 화면)", 
-            "🌿 에코 그린 모드 (Eco Green - 원예 특화 테마)",
-            "🎨 사용자 지정 컬러 (Custom Color Picker)"
-        ],
-        index=0
-    )
-    
-    st.markdown("---")
-    
-    # 1. 기본 제공 모드들 처리
-    if "다크" in theme_mode:
-        st.markdown("""
-            <style>
-            .stApp {
-                background-color: #0e1117;
-                color: #fafafa;
-            }
-            </style>
-        """, unsafe_allow_html=True)
-        st.info("🌙 **다크 모드**가 적용되었습니다. 눈의 피로를 줄여주는 세련된 개발 환경 테마입니다.")
-        
-    elif "라이트" in theme_mode:
-        st.markdown("""
-            <style>
-            .stApp {
-                background-color: #ffffff;
-                color: #31333F;
-            }
-            </style>
-        """, unsafe_allow_html=True)
-        st.success("☀️ **라이트 모드**가 적용되었습니다. 밝고 선명한 화면 가독성을 제공합니다.")
-        
-    elif "에코 그린" in theme_mode:
-        st.markdown("""
-            <style>
-            .stApp {
-                background-color: #f0fdf4;
-                color: #14532d;
-            }
-            </style>
-        """, unsafe_allow_html=True)
-        st.warning("🌿 **에코 그린 모드**가 적용되었습니다. 원예 작물과 생명과학의 싱그러운 초록빛 테마가 반영되었습니다!")
-        
-    # 2. 🎨 사용자가 직접 색상을 고르는 커스텀 모드 처리
-    else:
-        st.markdown("### 🎨 나만의 커스텀 테마 색상 설정")
-        col_c1, col_c2 = st.columns(2)
-        with col_c1:
-            custom_bg = st.color_picker("원하는 배경 색상 선택", "#1e293b")
-        with col_c2:
-            custom_text = st.color_picker("원하는 글자 색상 선택", "#f8fafc")
-            
-        # 선택한 커스텀 색상을 CSS로 실시간 반영
         st.markdown(f"""
             <style>
             .stApp {{
@@ -223,7 +145,7 @@ with tab3:
         {"작물명": "상추", "적정 온도": "15°C ~ 20°C", "핵심 관리 팁": "고온(25°C 이상) 시 추대 현상(꽃대 발생) 주의"},
         {"작물명": "바질", "적정 온도": "20°C ~ 30°C", "핵심 관리 팁": "저온(15°C 이하)에 매우 취약하므로 보온 필수"},
         {"작물명": "딸기", "적정 온도": "17°C ~ 23°C", "핵심 관리 팁": "수확기 고온은 과실 연화를 유발하므로 통풍 관리 중요"},
-        {"작물명": "파프리카", "적정 온도": "20°C ~ 28°C", "핵심 관리 팁": "주야간 온도차 조절을 통한 정밀 착과 관리 필요"},
+        {"SQL명": "파프리카", "작물명": "파프리카", "적정 온도": "20°C ~ 28°C", "핵심 관리 팁": "주야간 온도차 조절을 통한 정밀 착과 관리 필요"}, # Safe fallback key adjust if needed
         {"작물명": "샤인머스캣", "적정 온도": "20°C ~ 30°C", "핵심 관리 팁": "수확기 충분한 광량 확보로 당도 축적 지연 방지"}
     ])
     st.dataframe(db_df, use_container_width=True)
