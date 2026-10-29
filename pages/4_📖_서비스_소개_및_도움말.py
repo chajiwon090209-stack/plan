@@ -6,8 +6,7 @@ st.set_page_config(page_title="서비스 소개 및 도움말", page_icon="📖"
 st.title("📖 서비스 소개 및 사용자 가이드")
 st.caption("본 웹 애플리케이션의 개발 배경, 타겟 사용자, 사용법, 시스템 구조 및 테마 설정을 안내합니다.")
 
-# 탭을 나누어 깔끔하게 구성 (테마 설정 탭 추가)
-tab1, tab2, tab3, tab4 = st.tabs(["🌱 기획 의도 및 가이드", "🎨 테마 설정 (Light/Dark)", "📊 작물 DB 가이드", "🛠️ 개발 환경 및 Git 전략"])
+tab1, tab2, tab3, tab4 = st.tabs(["🌱 기획 의도 및 가이드", "🎨 테마 설정 (Light/Dark/Eco)", "📊 작물 DB 가이드", "🛠️ 개발 환경 및 Git 전략"])
 
 with tab1:
     st.subheader("1. 프로젝트 기획 의도 (Background)")
@@ -63,7 +62,6 @@ with tab2:
     st.subheader("🎨 애플리케이션 테마 및 화면 모드 설정")
     st.write("프로그램의 전체적인 시각적 분위기를 사용자의 취향이나 환경에 맞게 변경할 수 있습니다.")
     
-    # 테마 선택 라디오 버튼 또는 셀렉트박스
     theme_mode = st.radio(
         "화면 테마 모드 선택",
         ["🌙 다크 모드 (Dark Mode - 기본)", "☀️ 라이트 모드 (Light Mode - 밝은 화면)", "🌿 에코 그린 모드 (Eco Green - 원예 특화 테마)"],
@@ -73,13 +71,35 @@ with tab2:
     st.markdown("---")
     
     if "다크" in theme_mode:
-        st.info("🌙 **다크 모드**가 선택되었습니다. 눈의 피로를 줄여주며 세련된 개발 환경 분위기를 제공합니다.")
-        st.markdown("*(※ Streamlit 우측 상단 `Settings` 메뉴의 `Theme`에서도 다크/라이트를 직접 전환하실 수 있습니다.)*")
+        st.markdown("""
+            <style>
+            .stApp {
+                background-color: #0e1117;
+                color: #fafafa;
+            }
+            </style>
+        """, unsafe_allow_html=True)
+        st.info("🌙 **다크 모드**가 적용되었습니다. 눈의 피로를 줄여주는 세련된 개발 환경 테마입니다.")
     elif "라이트" in theme_mode:
-        st.success("☀️ **라이트 모드**가 선택되었습니다. 밝고 선명한 화면으로 가독성을 높여줍니다.")
-        st.markdown("*(※ Streamlit 우측 상단 `Settings` 메뉴에서 `Theme -> Light`를 선택하시면 전체 화면이 밝게 반영됩니다.)*")
+        st.markdown("""
+            <style>
+            .stApp {
+                background-color: #ffffff;
+                color: #31333F;
+            }
+            </style>
+        """, unsafe_allow_html=True)
+        st.success("☀️ **라이트 모드**가 적용되었습니다. 밝고 선명한 화면 가독성을 제공합니다.")
     else:
-        st.warning("🌿 **에코 그린 모드**가 선택되었습니다. 원예 작물과 생명과학의 싱그러운 느낌을 담은 컨셉입니다.")
+        st.markdown("""
+            <style>
+            .stApp {
+                background-color: #f0fdf4;
+                color: #14532d;
+            }
+            </style>
+        """, unsafe_allow_html=True)
+        st.warning("🌿 **에코 그린 모드**가 적용되었습니다. 원예 작물과 생명과학의 싱그러운 초록빛 테마가 반영되었습니다!")
 
 with tab3:
     st.subheader("🌾 주요 원예작물 생육 환경 데이터베이스")
