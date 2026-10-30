@@ -39,31 +39,44 @@ col3.metric("주요 생장 단계", df['생장단계'].mode()[0] if not df.empty
 
 st.markdown("---")
 
-# 1. 토양 수분 상태별 분포 차트 (글씨 가로 정렬)
-st.subheader("💧 토양 수분 상태 분포")
-water_counts = df['토양수분'].value_counts().reset_index()
-water_counts.columns = ['토양수분', '건수']
+# 레이아웃을 컬럼으로 나누어 그래프가 너무 화면을 꽉 채우지 않고 적당한 크기로 보이도록 조절
+col_left, col_right = st.columns(2, gap="large")
 
-water_chart = alt.Chart(water_counts).mark_bar(color='#60a5fa').encode(
-    x=alt.X('토양수분:N', sort=None, axis=alt.Axis(labelAngle=0)), # labelAngle=0으로 글씨를 가로로 고정
-    y=alt.Y('건수:Q', title='진단 건수'),
-    tooltip=['토양수분', '건수']
-).properties(height=300)
+with col_left:
+    # 1. 토양 수분 상태별 분포 차트
+    st.subheader("💧 토양 수분 상태 분포")
+    water_counts = df['토양수분'].value_counts().reset_index()
+    water_counts.columns = ['토양수분', '건수']
 
-st.altair_chart(water_chart, use_container_width=True)
+    water_chart = alt.Chart(water_counts).mark_bar(color='#60a5fa', width=40).encode(
+        x=alt.X('토양수분:N', sort=None, axis=alt.Axis(labelAngle=0)),
+        y=alt.Y('건수:Q', title='진단 건수'),
+        tooltip=['토양수분', '건수']
+    ).properties(
+        width=400,  # 그래프 가로 크기 지정
+        height=280  # 그래프 세로 크기 지정
+    )
 
-# 2. 광 조건별 분포 차트 (글씨 가로 정렬)
-st.subheader("☀️ 광환경(조도) 조건 분포")
-light_counts = df['광조건'].value_counts().reset_index()
-light_counts.columns = ['광조건', '건수']
+    st.altair_chart(water_chart, use_container_width=True)
 
-light_chart = alt.Chart(light_counts).mark_bar(color='#34d399').encode(
-    x=alt.X('광조건:N', sort=None, axis=alt.Axis(labelAngle=0)), # labelAngle=0으로 글씨를 가로로 고정
-    y=alt.Y('건수:Q', title='진단 건수'),
-    tooltip=['광조건', '건수']
-).properties(height=300)
+with col_right:
+    # 2. 광 조건별 분포 차트
+    st.subheader("☀️ 광환경(조도) 조건 분포")
+    light_counts = df['광조건'].value_counts().reset_index()
+    light_counts.columns = ['광조건', '건수']
 
-st.altair_chart(light_chart, use_container_width=True)
+    light_chart = alt.Chart(light_counts).mark_bar(color='#34d399', width=35).encode(
+        x=alt.X('광조건:N', sort=None, axis=alt.Axis(labelAngle=0)),
+        y=alt.Y('건수:Q', title='진단 건수'),
+        tooltip=['광조건', '건수']
+    ).properties(
+        width=400,  # 그래프 가로 크기 지정
+        height=280  # 그래프 세로 크기 지정
+    )
+
+    st.altair_chart(light_chart, use_container_width=True)
+
+st.markdown("---")
 
 # 3. 데이터 테이블 확인
 if is_sample:
