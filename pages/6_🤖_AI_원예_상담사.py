@@ -5,24 +5,21 @@ st.set_page_config(page_title="AI 원예 상담사", page_icon="🤖", layout="w
 st.title("🤖 실시간 AI 원예 생장 상담사")
 st.caption("원예 작물 재배, 생리 장애, 병해충 관리 등 궁금한 점을 무엇이나 물어보세요!")
 
-# 📸 작물 사진 업로드 파일러 추가
-uploaded_file = st.file_uploader("🌱 [선택] 진단할 작물 사진을 업로드해 주세요 (JPG, PNG)", type=["jpg", "jpeg", "png"])
-
-if uploaded_file is not None:
-    st.image(uploaded_file, caption="업로드된 작물 관찰 사진", width=250)
-    st.success("✅ 사진이 성공적으로 업로드되었습니다! 아래 채팅창에 질문을 남겨보세요.")
-
 # 채팅 기록 초기화
 if "chat_messages" not in st.session_state:
     st.session_state.chat_messages = [
         {"role": "assistant", "content": "안녕하세요! 원예 작물 AI 상담사입니다. 키우고 계신 작물 사진을 업로드하거나 재배 환경에 대해 궁금한 점을 말씀해 주세요! 🌱"}
     ]
 
+# 기존 대화 내용 출력
 for message in st.session_state.chat_messages:
     with st.chat_message(message["role"]):
         if "img" in message and message["img"] is not None:
             st.image(message["img"], width=200)
         st.markdown(message["content"])
+
+# 📸 작물 사진 업로드 위젯을 채팅 입력창 바로 위(하단부)로 이동
+uploaded_file = st.file_uploader("🌱 [선택] 진단할 작물 사진을 업로드해 주세요 (JPG, PNG)", type=["jpg", "jpeg", "png"])
 
 if user_input := st.chat_input("예: 업로드한 작물 사진의 잎 색상이 변하는데 원인이 뭘까요?"):
     # 사용자의 입력 및 업로드된 이미지 저장
@@ -50,3 +47,4 @@ if user_input := st.chat_input("예: 업로드한 작물 사진의 잎 색상이
             st.markdown(ai_response)
     
     st.session_state.chat_messages.append({"role": "assistant", "content": ai_response, "img": None})
+    st.rerun()
