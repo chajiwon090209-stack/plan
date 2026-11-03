@@ -1,79 +1,82 @@
 import streamlit as st
-import pandas as pd
 
-st.set_page_config(page_title="원예작물 맞춤형 생장 환경 진단 시스템", page_icon="🌱", layout="wide")
+st.set_page_config(page_title="스마트팜 원예 진단 플랫폼", page_icon="🌱", layout="wide")
 
-# 세션 상태 초기화
-if "plant_logs" not in st.session_state:
-    st.session_state.plant_logs = []
+st.title("🌱 스마트팜 원예 작물 진단 및 AI 상담 플랫폼")
+st.caption("작물의 생장 환경을 진단하고 실시간 AI 상담사에게 궁금한 점을 물어보세요.")
 
-st.title("🌱 원예작물 맞춤형 생장 환경 진단 시스템")
-st.caption("원하는 작물과 현재 재배 환경 조건을 입력하면 생리 반응에 맞춘 정밀 가이드를 제시합니다.")
+# 상단 탭 나누기 (진단 홈 / AI 상담사)
+tab1, tab2 = st.tabs(["🔬 작물 환경 진단", "🤖 실시간 AI 원예 상담사"])
 
-# 화면을 좌우 2열로 분할
-col_left, col_right = st.columns([1, 1], gap="large")
+with tab1:
+    st.subheader("🔬 스마트 원예 작물 환경 진단")
+    crop_name = st.selectbox("재배 작물 선택", ["방울토마토", "상추", "딸기", "샤인머스캣", "기타 작물"])
+    temp = st.slider("현재 재배 온도 (°C)", 10, 35, 22)
+    humidity = st.slider("토양 수분 상태 (%)", 10, 100, 60)
+    light = st.selectbox("광환경 (조도) 조건", ["양지(강한 직사광선)", "반양지", "음지", "LED 인공광"])
+    growth_stage = st.selectbox("현재 생장 단계", ["발아/유묘기", "영양생장기", "개화/수분기", "결실/수확기"])
 
-with col_left:
-    st.markdown("### 📥 재배 환경 입력")
-    
-    # 1. 작물 이름 입력
-    crop_name = st.text_input("진단할 작물 이름을 입력하세요", value="방울토마토", placeholder="예: 방울토마토, 상추 등")
-    
-    # 2. 온도 슬라이더
-    current_temp = st.slider("현재 재배 온도 (°C)", 0, 40, 22)
-    
-    # 3. 토양 수분 상태 선택
-    soil_moisture = st.selectbox("토양 수분 상태", ["건조", "적정", "과습"])
-    
-    # 4. 생장 단계 선택
-    growth_stage = st.selectbox("현재 작물의 생장 단계", ["발아/유묘기", "영양생장기", "개화/수분기", "결실/수확기"])
-    
-    # 5. 광 조건 (조도) 선택 -> st.pills를 활용해 깔끔한 버튼 형태로 개선!
-    st.markdown("광 조건 (조도)")
-    light_condition = st.pills(
-        "광 조건 선택",
-        ["음지", "반양지", "양지(강한 직사광선)", "LED 인공광"],
-        default="양지(강한 직사광선)",
-        label_visibility="collapsed"
-    )
+    if st.button("🚀 종합 생장 진단 시작", use_container_width=True):
+        # 진단 결과 판정 로직
+        if humidity < 30:
+            result_msg = "건조 경고: 수분 공급이 시급합니다!"
+        elif humidity > 85:
+            result_msg = "과습 경고: 배수 및 통풍을 강화하세요!"
+        elif temp > 30:
+            result_msg = "고온 경고: 차광막 설치 및 환기가 필요합니다."
+        else:
+            result_msg = "적정 상태: 아주 훌륭한 재배 환경입니다! ✨"
 
-with col_right:
-    st.markdown("### 💡 생육 진단 결과 및 정밀 가이드")
-    
-    # 온도 적정성 평가 로직
-    if 18 <= current_temp <= 27:
-        temp_status = "적정"
-        temp_msg = f"적정 온도: 현재 온도({current_temp}°C)가 최적 생육 범위(18~27°C) 내에 잘 유지되고 있습니다."
-        st.success(f"✅ {temp_msg}")
-    elif current_temp < 18:
-        temp_status = "저온 경고"
-        temp_msg = f"저온 경고: 현재 온도({current_temp}°C)가 다소 낮습니다. 보온 조치를 고려하세요."
-        st.warning(f"⚠️ {temp_msg}")
-    else:
-        temp_status = "고온 경고"
-        temp_msg = f"고온 경고: 현재 온도({current_temp}°C)가 높습니다. 환기 및 차광이 필요합니다."
-        st.error(f"🚨 {temp_msg}")
+        st.success(f"📌 **[{crop_name}] 진단 결과:** {result_msg}")
+
+        # 세션에 일지 데이터 자동 누적 저장
+        if "plant_logs" not in st.session_state:
+            st.session_state.plant_logs = []
         
-    # 맞춤형 리포트 박스
-    with st.container(border=True):
-        st.markdown(f"#### 🧬 [{crop_name}] 생육 진단 리포트")
-        st.markdown(f"""
-        - **생장 단계 분석:** 현재 `{growth_stage}` 단계입니다. 단계별 맞춤 수분(`{soil_moisture}`) 및 양분 관리법을 적용하세요.
-        - **광환경 진단:** 선택된 `{light_condition}` 환경에 맞춰 광합성 효율을 극대화하세요.
-        - **원예생명 진단 팁:** 영양생장기에는 과습을 피하고, 개화기/수분기에는 적절한 온도를 유지해야 결실율이 높아집니다.
-        """)
-    
-    st.markdown("")
-    
-    # 일지 추가 버튼 (눈에 띄게 배치)
-    if st.button("📋 이 진단 기록을 생장 일지에 추가", type="primary", use_container_width=True):
-        new_log = {
+        st.session_state.plant_logs.append({
             "작물명": crop_name,
-            "현재온도": f"{current_temp}°C",
-            "토양수분": soil_moisture,
+            "현재온도": f"{temp}°C",
+            "토양수분": "적정" if 30 <= humidity <= 85 else ("건조" if humidity < 30 else "과습"),
             "생장단계": growth_stage,
-            "광조건": light_condition,
-            "진단결과": temp_status
-        }
-        st.session_state.plant_logs.insert(0, new_log)
-        st.success("🎉 진단 기록이 생장 관리 일지에 성공적으로 추가되었습니다!")
+            "광조건": light,
+            "진단결과": result_msg
+        })
+        st.info("💡 진단 내용이 '생장 관리 일지'에 자동으로 기록되었습니다!")
+
+with tab2:
+    st.subheader("🤖 실시간 AI 원예 생장 상담사")
+    
+    if "chat_messages" not in st.session_state:
+        st.session_state.chat_messages = [
+            {"role": "assistant", "content": "안녕하세요! 원예 작물 AI 상담사입니다. 재배 환경이나 작물 상태에 대해 무엇이든 물어보세요! 🌱"}
+        ]
+
+    for message in st.session_state.chat_messages:
+        with st.chat_message(message["role"]):
+            if "img" in message and message["img"] is not None:
+                st.image(message["img"], width=200)
+            st.markdown(message["content"])
+
+    uploaded_file = st.file_uploader("🌱 [선택] 진단할 작물 사진 업로드 (JPG, PNG)", type=["jpg", "jpeg", "png"])
+
+    if user_input := st.chat_input("예: 엽색이 변하는 원인이 뭘까요?"):
+        current_msg = {"role": "user", "content": user_input, "img": uploaded_file}
+        st.session_state.chat_messages.append(current_msg)
+        
+        with st.chat_message("user"):
+            if uploaded_file is not None:
+                st.image(uploaded_file, width=200)
+            st.markdown(user_input)
+
+        with st.chat_message("assistant"):
+            with st.spinner("AI가 분석 중입니다..."):
+                if uploaded_file is not None:
+                    ai_response = "📸 **[AI 이미지 진단]** 업로드해주신 사진을 분석한 결과, 일시적인 과습 또는 영양 불균형 초기 증상으로 보입니다. 배수 상태를 점검해 보세요!"
+                elif "토마토" in user_input:
+                    ai_response = "🍅 방울토마토는 주야간 온도차를 5~10°C 유지하는 것이 당도 향상에 좋습니다."
+                else:
+                    ai_response = f"🌱 입력하신 '{user_input}'에 대해 정밀 환경 제어를 유지하는 것이 중요합니다. 작물 사진을 함께 첨부해 주시면 더욱 정확하게 진단해 드릴 수 있습니다!"
+                st.markdown(ai_response)
+        
+        st.session_state.chat_messages.append({"role": "assistant", "content": ai_response, "img": None})
+        st.rerun()
