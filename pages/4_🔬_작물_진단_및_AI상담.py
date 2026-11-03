@@ -5,9 +5,9 @@ st.set_page_config(page_title="작물 진단 및 AI 상담", page_icon="🔬", l
 st.title("🌱 스마트팜 원예 작물 진단 및 AI 상담 플랫폼")
 st.caption("작물의 생장 환경을 진단하고 실시간 AI 상담사에게 궁금한 점을 물어보세요.")
 
-# 로그인 상태 확인 (선택 사항 안내용)
+# 로그인 상태 확인 (수정 완료: 따옴표 및 f-string 적용)
 current_user = st.session_state.get("username", "비로그인 사용자")
-st.info(현재 접속 중인 사용자: **{current_user}**)
+st.info(f"현재 접속 중인 사용자: **{current_user}**")
 
 # 상단 탭 나누기 (진단 홈 / AI 상담사)
 tab1, tab2 = st.tabs(["🔬 작물 환경 진단", "🤖 실시간 AI 원예 상담사"])
