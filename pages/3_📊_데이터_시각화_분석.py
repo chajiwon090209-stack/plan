@@ -1,87 +1,88 @@
 import streamlit as st
-import pandas as pd
-import altair as alt
+import streamlit.components.v1 as components
+import random
 
-st.set_page_config(page_title="데이터 시각화 분석", page_icon="📊", layout="wide")
+st.set_page_config(page_title="미니게임 및 서비스 소개", page_icon="🎮", layout="wide")
 
-st.title("📊 원예 환경 및 생장 데이터 시각화 분석")
-st.caption("누적된 생장 진단 데이터를 바탕으로 온도 분포 및 환경 조건을 시각적 차트로 분석합니다.")
+tab1, tab2 = st.tabs(["🎮 수박 게임 (미니게임)", "📖 서비스 소개 및 가이드"])
 
-# 세션 상태 초기화
-if "plant_logs" not in st.session_state:
-    st.session_state.plant_logs = []
+with tab1:
+    st.title("🎮 원예작물 과일 합치기 게임")
+    st.caption("상자를 클릭해 씨앗을 떨어뜨리고 더 큰 작물로 진화시켜 보세요!")
 
-# 실제 누적 데이터 가져오기
-logs = st.session_state.plant_logs
+    if "username" in st.session_state and st.session_state.username:
+        current_player = st.session_state.username
+    else:
+        if "random_player_name" not in st.session_state:
+            st.session_state.random_player_name = f"새싹농부_{random.randint(10, 99)}"
+        current_player = st.session_state.random_player_name
 
-# 💡 데이터가 없을 때 보여줄 샘플(더미) 데이터 정의
-if not logs:
-    st.info("💡 **[미리보기 모드]** 아직 직접 쌓인 진단 데이터가 없어, 이해를 돕기 위한 **샘플 데이터(Dummy Data)**로 시각화 미리보기를 제공합니다. 메인 페이지에서 일지를 추가하면 실제 데이터로 바뀝니다!")
+    col_g, col_r = st.columns([2, 1], gap="large")
+
+    with col_g:
+        game_html = (
+            "<!DOCTYPE html><html><head><meta charset='utf-8'>"
+            "<script src='https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js'></script>"
+            "<style>"
+            "body { background-color: #0e1117; color: white; font-family: sans-serif; text-align: center; margin: 0; }"
+            "#score-board { font-size: 18px; margin: 6px 0; color: #34d399; font-weight: bold; }"
+            "#game-box { width: 360px; height: 500px; margin: 0 auto; border: 4px solid #34d399; border-radius: 12px; background: #1e293b; position: relative; cursor: pointer; }"
+            ".btn { background-color: #34d399; color: #0e1117; border: none; padding: 8px 20px; font-size: 15px; font-weight: bold; border-radius: 6px; cursor: pointer; margin-top: 10px; }"
+            "</style></head><body>"
+            f"<div id='score-board'>플레이어: {current_player} | 점수: <span id='score'>0</span> 점</div>"
+            "<div id='game-box'></div><button class='btn' onclick='startGame()'>다시 시작</button>"
+            "<script>"
+            "const { Engine, Render, Runner, Bodies, Composite, Events } = Matter;"
+            "let engine, render, runner, score = 0, canDrop = true;"
+            "const FRUITS = [{r:15, c:'#a3e635', l:'🌱', s:2}, {r:22, c:'#f43f5e', l:'🍓', s:4}, {r:30, c:'#ef4444', l:'🍅', s:8}, {r:38, c:'#a855f7', l:'🍇', s:16}, {r:48, c:'#84cc16', l:'🍈', s:32}, {r:60, c:'#10b981', l:'🍉', s:64}];"
+            "function startGame() {"
+            "  const box = document.getElementById('game-box'); box.innerHTML = ''; score = 0; document.getElementById('score').innerText = score; canDrop = true;"
+            "  engine = Engine.create(); render = Render.create({ element: box, engine: engine, options: { width: 360, height: 500, wireframes: false, background: '#1e293b' } });"
+            "  Composite.add(engine.world, [Bodies.rectangle(180, 515, 360, 30, {isStatic:true}), Bodies.rectangle(-10, 250, 20, 500, {isStatic:true}), Bodies.rectangle(370, 250, 20, 500, {isStatic:true})]);"
+            "  Render.run(render); runner = Runner.create(); Runner.run(runner, engine);"
+            "  box.addEventListener('click', e => {"
+            "    if (!canDrop) return; let x = Math.max(30, Math.min(330, e.clientX - box.getBoundingClientRect().left));"
+            "    let body = Bodies.circle(x, 20, FRUITS[0].r, {restitution:0.2, render:{fillStyle:FRUITS[0].c}}); body.fl = 0;"
+            "    Composite.add(engine.world, body); canDrop = false; setTimeout(() => canDrop = true, 350);"
+            "  });"
+            "  Events.on(engine, 'collisionStart', ev => {"
+            "    ev.pairs.forEach(p => {"
+            "      let b1 = p.bodyA, b2 = p.bodyB;"
+            "      if (b1.fl !== undefined && b1.fl === b2.fl && b1.fl < FRUITS.length - 1) {"
+            "        Composite.remove(engine.world, [b1, b2]); let lvl = b1.fl + 1;"
+            "        let nb = Bodies.circle((b1.position.x+b2.position.x)/2, (b1.position.y+b2.position.y)/2, FRUITS[lvl].r, {restitution:0.2, render:{fillStyle:FRUITS[lvl].c}});"
+            "        nb.fl = lvl; Composite.add(engine.world, nb); score += FRUITS[lvl].s; document.getElementById('score').innerText = score;"
+            "      }"
+            "    });"
+            "  });"
+            "  Events.on(render, 'afterRender', () => {"
+            "    let ctx = render.context; Composite.allBodies(engine.world).forEach(b => {"
+            "      if (b.fl !== undefined) { ctx.font = (FRUITS[b.fl].r*0.9)+'px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(FRUITS[b.fl].l, b.position.x, b.position.y); }"
+            "    });"
+            "  });"
+            "}"
+            "window.onload = startGame;"
+            "</script></body></html>"
+        )
+        components.html(game_html, height=600)
+
+    with col_r:
+        st.markdown("### 🏆 명예의 전당")
+        st.caption(f"접속자: **{current_player}**")
+        with st.container(border=True):
+            st.markdown("🥇 **스마트팜고수** — `2450점`")
+            st.markdown("🥈 **원예학과_김학생** — `1820점`")
+            st.markdown("🥉 **식물사랑** — `1350점`")
+
+with tab2:
+    st.title("📖 서비스 소개 및 도움말")
+    st.markdown("""
+    ### 🌱 스마트팜 원예 생장 분석 플랫폼이란?
+    고등학교 원예 및 식품생명공학 학습을 지원하기 위해 제작된 웹 기반 지능형 플랫폼입니다.
     
-    sample_df = pd.DataFrame([
-        {"작물명": "🍅 방울토마토", "현재온도": "22°C", "토양수분": "적정", "생장단계": "영양생장기", "광조건": "양지(강한 직사광선)", "진단결과": "적정"},
-        {"작물명": "🥬 상추", "현재온도": "26°C", "토양수분": "과습", "생장단계": "개화/수분기", "광조건": "반양지", "진단결과": "고온 경고"},
-        {"작물명": "🍓 딸기", "현재온도": "16°C", "토양수분": "건조", "생장단계": "발아/유묘기", "광조건": "음지", "진단결과": "저온 경고"},
-        {"작물명": "🍇 샤인머스캣", "현재온도": "24°C", "토양수분": "적정", "생장단계": "결실/수확기", "광조건": "LED 인공광", "진단결과": "적정"},
-        {"작물명": "🍅 방울토마토", "현재온도": "20°C", "토양수분": "적정", "생장단계": "영양생장기", "광조건": "양지(강한 직사광선)", "진단결과": "적정"}
-    ])
-    df = sample_df
-    is_sample = True
-else:
-    df = pd.DataFrame(logs)
-    is_sample = False
-
-# 상단 요약 지표
-col1, col2, col3 = st.columns(3)
-col1.metric("총 진단 및 관리 건수", f"{len(df)} 건")
-col2.metric("등록된 작물 종류", f"{df['작물명'].nunique()} 개")
-col3.metric("주요 생장 단계", df['생장단계'].mode()[0] if not df.empty else "-")
-
-st.markdown("---")
-
-# 레이아웃을 컬럼으로 나누어 그래프가 너무 화면을 꽉 채우지 않고 적당한 크기로 보이도록 조절
-col_left, col_right = st.columns(2, gap="large")
-
-with col_left:
-    # 1. 토양 수분 상태별 분포 차트
-    st.subheader("💧 토양 수분 상태 분포")
-    water_counts = df['토양수분'].value_counts().reset_index()
-    water_counts.columns = ['토양수분', '건수']
-
-    water_chart = alt.Chart(water_counts).mark_bar(color='#60a5fa', width=40).encode(
-        x=alt.X('토양수분:N', sort=None, axis=alt.Axis(labelAngle=0)),
-        y=alt.Y('건수:Q', title='진단 건수'),
-        tooltip=['토양수분', '건수']
-    ).properties(
-        width=400,  # 그래프 가로 크기 지정
-        height=280  # 그래프 세로 크기 지정
-    )
-
-    st.altair_chart(water_chart, use_container_width=True)
-
-with col_right:
-    # 2. 광 조건별 분포 차트
-    st.subheader("☀️ 광환경(조도) 조건 분포")
-    light_counts = df['광조건'].value_counts().reset_index()
-    light_counts.columns = ['광조건', '건수']
-
-    light_chart = alt.Chart(light_counts).mark_bar(color='#34d399', width=35).encode(
-        x=alt.X('광조건:N', sort=None, axis=alt.Axis(labelAngle=0)),
-        y=alt.Y('건수:Q', title='진단 건수'),
-        tooltip=['광조건', '건수']
-    ).properties(
-        width=400,  # 그래프 가로 크기 지정
-        height=280  # 그래프 세로 크기 지정
-    )
-
-    st.altair_chart(light_chart, use_container_width=True)
-
-st.markdown("---")
-
-# 3. 데이터 테이블 확인
-if is_sample:
-    st.subheader("📋 [미리보기] 샘플 데이터 원본 테이블")
-else:
-    st.subheader("📋 전체 누적 데이터 원본")
-
-st.dataframe(df, use_container_width=True)
+    * **핵심 기능 안내:**
+      1. **작물 환경 진단 & AI 상담:** 온·습도 및 광환경을 진단하고 AI를 통해 맞춤형 처방을 받습니다.
+      2. **생장 관리 & 캘린더:** 일지 기록과 사진 캘린더로 작물의 성장 과정을 체계적으로 추적합니다.
+      3. **데이터 시각화 & 공유:** 수집된 데이터를 그래프로 분석하고 친구와 코드를 주고받으며 협업합니다.
+      4. **미니게임:** 학습 중간 쉬어갈 수 있는 원예 테마의 수박 게임을 즐길 수 있습니다.
+    """)
