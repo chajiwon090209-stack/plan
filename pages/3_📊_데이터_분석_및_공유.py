@@ -62,6 +62,10 @@ with tab1:
         st.altair_chart(chart2, use_container_width=True)
 
 with tab2:
+    # ==========================================
+    # 3-1. JSON 직렬화를 통한 데이터 내보내기(공유 코드 생성)
+    # - 세션에 누적된 일지 데이터를 JSON 문자열로 변환하여 텍스트 영역에 출력
+    # ==========================================
     st.subheader("🤝 공동 작업 및 데이터 내보내기/불러오기")
     col_ex, col_im = st.columns(2, gap="large")
     
