@@ -22,7 +22,10 @@ if "username" not in st.session_state:
 with st.container(border=True):
     st.markdown("### 📝 로그인 정보 입력")
     
-    # 이미 로그인된 상태라면
+    # ==========================================
+    # 3-1. 로그인 완료 상태 분기 (Logout 처리)
+    # - 이미 로그인된 경우 환영 문구와 로그아웃 버튼 제공
+    # ==========================================
     if st.session_state.logged_in:
         st.success(f"🎉 현재 **{st.session_state.username}**님으로 로그인되어 있습니다!")
         if st.button("로그아웃"):
