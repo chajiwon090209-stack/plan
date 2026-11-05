@@ -25,6 +25,10 @@ with tab1:
     col_g, col_r = st.columns([2, 1], gap="large")
 
     with col_g:
+        # ==========================================
+        # 2-1. Matter.js 물리 엔진 기반 원예 과일 합치기 미니게임 렌더링
+        # - HTML5 Canvas와 Matter.js 라이브러리를 활용해 중력, 충돌 감지, 작물 진화 및 점수 합산 구현
+        # ==========================================
         game_html = (
             "<!DOCTYPE html><html><head><meta charset='utf-8'>"
             "<script src='https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js'></script>"
