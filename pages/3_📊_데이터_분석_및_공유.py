@@ -3,6 +3,11 @@ import pandas as pd
 import json
 import altair as alt
 
+# ==========================================
+# 1. 페이지 기본 설정 및 세션 데이터 바인딩
+# - 데이터 분석 및 공유 페이지 타이틀, 아이콘, 와이드 레이아웃 설정
+# - 세션에 저장된 진단 로그(plant_logs)를 불러와 데이터프레임 분석용 변수에 할당
+# ==========================================
 st.set_page_config(page_title="데이터 분석 및 공유", page_icon="📊", layout="wide")
 
 st.title("📊 환경 데이터 분석 및 친구와 기록 공유")
