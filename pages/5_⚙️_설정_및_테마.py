@@ -59,7 +59,10 @@ with st.container(border=True):
         st.session_state.font_color = user_font_color
         st.success(f"🎉 성공적으로 설정이 적용되었습니다!\n- **선택 테마:** {theme_choice}\n- **포인트 색상:** `{user_color}`\n- **폰트 색상:** `{user_font_color}`")
 
-# 선택된 커스텀 색상 및 폰트 색상을 시각적으로 보여주는 미리보기 박스
+# ==========================================
+# 3-1. 실시간 커스텀 색상 미리보기 박스 (HTML/CSS 렌더링)
+# - 사용자가 선택한 배경색(포인트 컬러)과 글자색을 실시간으로 반영하여 박스 미리보기 제공
+# ==========================================
 st.markdown(
     f"""
     <div style="padding: 20px; border-radius: 10px; background-color: {st.session_state.custom_color}; color: {st.session_state.font_color}; font-weight: bold; text-align: center; margin-top: 20px; font-size: 16px;">
