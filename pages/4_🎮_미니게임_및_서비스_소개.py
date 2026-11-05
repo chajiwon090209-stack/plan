@@ -2,6 +2,11 @@ import streamlit as st
 import streamlit.components.v1 as components
 import random
 
+# ==========================================
+# 1. 페이지 기본 설정 및 플레이어 세션 식별
+# - 미니게임 및 서비스 소개 페이지 타이틀, 아이콘, 와이드 레이아웃 설정
+# - 로그인된 유저 이름이 없으면 임의의 닉네임(새싹농부_XX)을 생성하여 게임 세션 바인딩
+# ==========================================
 st.set_page_config(page_title="미니게임 및 서비스 소개", page_icon="🎮", layout="wide")
 
 tab1, tab2 = st.tabs(["🎮 수박 게임 (미니게임)", "📖 서비스 소개 및 가이드"])
