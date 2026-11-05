@@ -10,7 +10,10 @@ st.set_page_config(page_title="스마트팜 원예 플랫폼 로그인", page_ic
 st.title("🔑 사용자 인증 및 로그인")
 st.caption("원예작물 생장 환경 진단 및 일지 시스템에 오신 것을 환영합니다. 로그인 후 기록을 안전하게 유지하세요.")
 
-# 로그인 세션 상태 초기화
+# ==========================================
+# 2. 세션 상태(Session State) 초기화
+# - 앱 전역에서 유저의 로그인 상태와 아이디를 유지하기 위한 변수 세팅
+# ==========================================
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 if "username" not in st.session_state:
