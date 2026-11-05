@@ -48,6 +48,11 @@ with st.container(border=True):
         user_font_color = st.color_picker("폰트 컬러 선택:", st.session_state.font_color, key="picker_font")
     
     st.markdown("")
+
+    # ==========================================
+    # 2-3. 설정 적용 버튼 및 세션 상태 갱신 핸들러
+    # - 선택된 테마와 컬러 값을 세션에 반영하고 성공 알림 메시지 출력
+    # ==========================================
     if st.button("✨ 테마 및 색상 적용하기", use_container_width=True):
         st.session_state.app_theme = theme_choice
         st.session_state.custom_color = user_color
