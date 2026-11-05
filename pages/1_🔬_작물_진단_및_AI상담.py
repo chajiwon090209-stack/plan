@@ -79,6 +79,11 @@ with tab2:
 
     uploaded_file = st.file_uploader("🌱 [선택] 진단할 작물 사진 업로드 (JPG, PNG)", type=["jpg", "jpeg", "png"])
 
+    # ==========================================
+    # 3-2. 사용자 입력 처리 및 조건부 AI 응답 핸들러
+    # - 이미지 업로드 유무 및 키워드(토마토 등)에 따른 맞춤형 가이드 분기 생성
+    # - 대화 내용을 세션에 추가하고 st.rerun()으로 UI 즉시 갱신
+    # ==========================================
     if user_input := st.chat_input("예: 엽색이 변하는 원인이 뭘까요?"):
         current_msg = {"role": "user", "content": user_input, "img": uploaded_file}
         st.session_state.chat_messages.append(current_msg)
