@@ -32,6 +32,11 @@ with st.container(border=True):
             st.session_state.logged_in = False
             st.session_state.username = ""
             st.rerun()
+        
+    # ==========================================
+    # 3-2. 미로그인 상태 분기 (Login 입력 및 검증)
+    # - 학번 또는 이름을 입력받고 공백 여부를 검증한 뒤 세션 갱신
+    # ==========================================
     else:
         input_id = st.text_input("아이디 (학번 또는 이름)", placeholder="예: 0학년 0반 홍길동")
         input_pw = st.text_input("비밀번호", type="password", placeholder="비밀번호를 입력하세요")
