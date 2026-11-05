@@ -76,6 +76,10 @@ with tab1:
         components.html(game_html, height=600)
 
     with col_r:
+        # ==========================================
+        # 2-2. 미니게임 명예의 전당 (Leaderboard)
+        # - 현재 접속 중인 플레이어 정보와 실시간 상위 랭커 점수판 출력
+        # ==========================================
         st.markdown("### 🏆 명예의 전당")
         st.caption(f"접속자: **{current_player}**")
         with st.container(border=True):
