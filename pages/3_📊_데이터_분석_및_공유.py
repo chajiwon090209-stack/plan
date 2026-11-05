@@ -17,6 +17,7 @@ if "plant_logs" not in st.session_state:
 
 logs = st.session_state.plant_logs
 
+# 상단 탭 나누기 (데이터 시각화 / 데이터 공유 및 병합)
 tab1, tab2 = st.tabs(["📊 환경 데이터 시각화", "🤝 친구와 기록 공유"])
 
 with tab1:
