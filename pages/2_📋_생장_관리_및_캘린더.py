@@ -13,9 +13,15 @@ st.title("📋 생장 관리 일지 & 사진 캘린더")
 if "plant_logs" not in st.session_state:
     st.session_state.plant_logs = []
 
+# 상단 탭 나누기 (생장 일지 목록 / 사진 캘린더)
 tab1, tab2 = st.tabs(["📋 생장 관리 일지", "📸 생육 사진 캘린더"])
 
 with tab1:
+    # ==========================================
+    # 2-1. 누적된 생장 관리 일지 출력 및 관리
+    # - 세션에 저장된 진단 로그를 Pandas DataFrame으로 변환하여 테이블 시각화
+    # - 전체 일지 초기화 버튼을 통한 데이터 리셋 기능 제공
+    # ==========================================
     st.subheader("📝 누적된 생장 관리 일지")
     if st.session_state.plant_logs:
         df = pd.DataFrame(st.session_state.plant_logs)
