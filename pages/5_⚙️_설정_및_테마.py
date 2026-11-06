@@ -1,15 +1,18 @@
 import streamlit as st
 
 # ==========================================
-# 1. 설정 페이지 기본 설정 및 테마 세션 초기화
+# 1. 설정 페이지 기본 설정 및 세션 상태 초기화
 # ==========================================
 st.set_page_config(page_title="설정 및 테마 변경", page_icon="⚙️", layout="wide")
 
-# 세션 상태 초기화
 if "app_theme" not in st.session_state:
     st.session_state.app_theme = "다크 모드 (기본)"
 if "custom_mode" not in st.session_state:
-    st.session_state.custom_mode = False  # 직접 색상 지정 모드 여부
+    st.session_state.custom_mode = False
+if "custom_bg" not in st.session_state:
+    st.session_state.custom_bg = "#0e1117"
+if "custom_font" not in st.session_state:
+    st.session_state.custom_font = "#ffffff"
 
 # ==========================================
 # 🎨 테마 모드별 기본 색상 프리셋 정의
@@ -20,16 +23,19 @@ theme_presets = {
     "스마트팜 그린 모드": {"bg": "#064e3b", "font": "#ecfdf5"}
 }
 
-# 현재 선택된 테마에 따른 배경/폰트 색상 결정
-if not st.session_state.custom_mode:
-    current_bg = theme_presets[st.session_state.app_theme]["bg"]
-    current_font = theme_presets[st.session_state.app_theme]["font"]
+# ==========================================
+# 🌟 [핵심] 현재 모드에 따른 배경/폰트 색상 계산
+# ==========================================
+if st.session_state.custom_mode:
+    current_bg = st.session_state.custom_bg
+    current_font = st.session_state.custom_font
 else:
-    current_bg = st.session_state.get("custom_bg", "#0e1117")
-    current_font = st.session_state.get("custom_font", "#ffffff")
+    preset = theme_presets.get(st.session_state.app_theme, theme_presets["다크 모드 (기본)"])
+    current_bg = preset["bg"]
+    current_font = preset["font"]
 
 # ==========================================
-# 🌟 [핵심] 전체 앱 CSS 스타일 동적 주입
+# 🌟 [핵심] 웹앱 전체 CSS 스타일 실시간 주입
 # ==========================================
 st.markdown(
     f"""
@@ -54,18 +60,19 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+# ==========================================
+# 2. UI 화면 구성
+# ==========================================
 st.title("⚙️ 앱 설정 및 테마 모드 변경")
 st.caption("원하시는 화면 테마 모드를 선택하거나, 나만의 커스텀 색상을 지정하여 웹앱 전체 분위기를 꾸며보세요.")
 
 with st.container(border=True):
     st.subheader("🎨 화면 테마 모드 선택")
     
-    # ==========================================
-    # 2-1. 화면 테마 모드 선택 라디오 버튼
-    # ==========================================
     theme_options = ["다크 모드 (기본)", "라이트 모드 (밝은 화면)", "스마트팜 그린 모드"]
     current_index = theme_options.index(st.session_state.app_theme) if st.session_state.app_theme in theme_options else 0
     
+    # 테마 라디오 버튼
     theme_choice = st.radio(
         "사용할 테마 모드를 선택하세요:",
         theme_options,
@@ -74,25 +81,21 @@ with st.container(border=True):
     
     st.markdown("---")
     
-    # ==========================================
-    # 2-2. 사용자 지정 커스텀 색상 사용 여부 토글
-    # ==========================================
+    # 사용자 지정 커스텀 색상 사용 여부 토글
     use_custom = st.checkbox("✨ 나만의 색상 직접 지정하기 (컬러 피커 사용)", value=st.session_state.custom_mode)
     
     if use_custom:
         col_c1, col_c2 = st.columns(2, gap="large")
         with col_c1:
             st.markdown("🖌️ **커스텀 배경 색상**")
-            user_bg = st.color_picker("배경 컬러 선택:", current_bg, key="picker_bg")
+            user_bg = st.color_picker("배경 컬러 선택:", st.session_state.custom_bg, key="picker_bg")
         with col_c2:
             st.markdown("✍️ **커스텀 폰트(글자) 색상**")
-            user_font = st.color_picker("폰트 컬러 선택:", current_font, key="picker_font")
+            user_font = st.color_picker("폰트 컬러 선택:", st.session_state.custom_font, key="picker_font")
     
     st.markdown("")
 
-    # ==========================================
-    # 2-3. 설정 적용 버튼 및 세션 상태 갱신
-    # ==========================================
+    # 설정 적용 버튼
     if st.button("✨ 테마 설정 즉시 적용하기", use_container_width=True):
         st.session_state.app_theme = theme_choice
         st.session_state.custom_mode = use_custom
@@ -100,8 +103,8 @@ with st.container(border=True):
             st.session_state.custom_bg = user_bg
             st.session_state.custom_font = user_font
         
-        st.success(f"🎉 성공적으로 테마가 적용되었습니다!\n- **선택 모드:** {theme_choice}" + (f" (커스텀 컬러 적용)" if use_custom else ""))
-        st.rerun()  # 즉시 새로고침하여 전체 화면에 색상 반영
+        st.success(f"🎉 성공적으로 적용되었습니다! (현재 모드: {theme_choice})")
+        st.rerun()
 
 st.markdown("---")
 
