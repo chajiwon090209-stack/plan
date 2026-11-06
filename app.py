@@ -1,72 +1,17 @@
 import streamlit as st
+from theme import apply_global_theme
 
 # ==========================================
-# 1. 페이지 기본 설정 및 세션 상태 초기화
-# - 브라우저 탭 설정, 레이아웃 구성
-# - 테마 모드, 커스텀 모드 여부, 배경 및 폰트 색상 기본값 정의
+# 🌟 [공통 테마 적용] 모든 페이지 테마 동기화 함수 호출
+# ==========================================
+apply_global_theme()
+
+# ==========================================
+# 1. 페이지 기본 설정 및 헤더 영역
+# - 웹앱의 탭 제목, 아이콘 및 레이아웃(wide) 설정
+# - 스마트팜 로그인 시스템 안내 타이틀 및 캡션 출력
 # ==========================================
 st.set_page_config(page_title="스마트팜 원예 플랫폼 로그인", page_icon="🔑", layout="wide")
-
-# ==========================================
-# 🌟 [공통 테마 적용] 세션 상태에 따른 전역 CSS 실시간 주입
-# ==========================================
-if "app_theme" not in st.session_state:
-    st.session_state.app_theme = "다크 모드 (기본)"
-if "custom_mode" not in st.session_state:
-    st.session_state.custom_mode = False
-if "custom_bg" not in st.session_state:
-    st.session_state.custom_bg = "#0e1117"
-if "custom_font" not in st.session_state:
-    st.session_state.custom_font = "#ffffff"
-
-# ==========================================
-# 🎨 테마 모드별 기본 색상 프리셋(Preset) 딕셔너리 정의
-# - 다크 모드, 라이트 모드, 스마트팜 그린 모드의 배경/글자 색상 매핑
-# ==========================================
-theme_presets = {
-    "다크 모드 (기본)": {"bg": "#0e1117", "font": "#ffffff"},
-    "라이트 모드 (밝은 화면)": {"bg": "#ffffff", "font": "#111827"},
-    "스마트팜 그린 모드": {"bg": "#064e3b", "font": "#ecfdf5"}
-}
-
-# ==========================================
-# 🌟 [핵심 로직] 현재 모드에 따른 배경 및 폰트 색상 동적 계산
-# - 사용자가 커스텀 색상 모드를 켰는지 여부에 따라 프리셋 또는 커스텀 값 선택
-# ==========================================
-if st.session_state.custom_mode:
-    current_bg = st.session_state.custom_bg
-    current_font = st.session_state.custom_font
-else:
-    preset = theme_presets.get(st.session_state.app_theme, theme_presets["다크 모드 (기본)"])
-    current_bg = preset["bg"]
-    current_font = preset["font"]
-
-# ==========================================
-# 🌟 [CSS 스타일 주입] 웹앱 전체 테마 실시간 반영
-# - Streamlit 메인 영역(.stApp), 마크다운 텍스트, 사이드바 배경 색상 강제 오버라이드
-# ==========================================
-st.markdown(
-    f"""
-    <style>
-    /* 웹앱 전체 배경색 및 폰트 색상 변경 */
-    .stApp {{
-        background-color: {current_bg};
-        color: {current_font};
-    }}
-    
-    /* 주요 텍스트 및 마크다운 글자색 강제 적용 */
-    h1, h2, h3, h4, h5, h6, p, span, label, .stMarkdown {{
-        color: {current_font} !important;
-    }}
-    
-    /* 사이드바 배경 및 텍스트 맞춤 조정 */
-    section[data-testid="stSidebar"] {{
-        background-color: {current_bg};
-    }}
-    </style>
-    """,
-    unsafe_allow_html=True
-)
 
 st.title("🔑 사용자 인증 및 로그인")
 st.caption("원예작물 생장 환경 진단 및 일지 시스템에 오신 것을 환영합니다. 로그인 후 기록을 안전하게 유지하세요.")
